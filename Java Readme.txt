@@ -513,5 +513,197 @@ void testTriplet() {
 				 split()
 
   	https://github.com/BanuPrakash/RAKUTEN
+========================================================================
+
+	Maven, GIT, JUnit [ Unit Testing ], Jacoco [Code Coverage], Checkstyle [ Coding Conventions]
+
+	==================
+
+Day 4:
+------
+	Spring Framework and JPA Framework
+	----------------------------------
+	MySQL installation 
+
+	codingbat.com
+	sqlzoo.net
+
+	mysql> create database rakuten_2020_db;
+	mysql> use rakuten_2020_db;
+	mysql> create table products (id int PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100), price double, category VARCHAR(100));
+
+	================================================
+
+	JPA Framework
+		Java Persistence API is a specification to use ORM framework
+
+		ORM --> Object Relational Mapping
+		Java Class <---> Database table
+		JAva attribute <--> columns
+		Once mapped, ORM is going to generate SQL for CRUD operations.
+
+		save(p); internally ORM generates INSERT INTO products [.....]
 
 
+		find(Product.class, 22);
+			select * from products where id = 22;
+
+			some of the popular ORM frameworks:
+				a) Hibernate
+				b) Toplink
+				c) KODO
+				d) OpenJPA
+
+		Spring Framework:
+		The Spring Framework is an application framework which provides light weight 
+		and inversion of control container for the Java platform.
+
+		Inversion Of Control ---> Dependency Injection
+
+		Spring Container manages the life cycle of Objects
+
+			Spring creates objects which has one of the following annotations at class level.
+			a) @Component
+			b) @Repository
+			c) @Service
+			d) @Controller
+			e) @RestController
+			f) @Configuration
+
+
+
+
+			Example:
+			@Repository("jpa")
+			public class EmployeeDaoJpaImpl implements EmployeeDao {
+
+			}
+			@Repository("mongo")
+			public class EmployeeDaoMongoImpl implements EmployeeDao {
+
+			}
+
+			@Service()
+			public class OrderService {
+				@Autowired
+				@Qualifier("jpa")
+				private EmployeeDao empDao;	
+			}
+
+			=========
+
+			@Repository()
+			@Primary()
+			public class EmployeeDaoJpaImpl implements EmployeeDao {
+
+			}
+			@Repository()
+			public class EmployeeDaoMongoImpl implements EmployeeDao {
+
+			}
+
+			@Service()
+			public class OrderService {
+				@Autowired
+				private EmployeeDao empDao;	
+			}
+
+		Spring container manages dependencies
+
+
+		beans.xmlservice.OrderSerice
+ auto-wire="byType" />
+		<beans>
+			<bean id="productDao" class="com.rakuten.prj.dao.ProductDaoJpaImpl" />
+
+			<bean id="orderService" class="com.rakuten.prj.service.OrderSerice" auto-wire="byType" />
+
+		</beans>
+
+
+		===========================
+
+		Spring creates objects which has @Component, @Repository, @Service....
+
+		Some scenarios we need to create objects on our own, but that object later should be 
+		managed by spring container
+
+
+		public class MyClass {
+
+			@Bean
+			public MyObject getObject() {
+				MyObject obj = new MyObject(.. ,, .....);
+				obj.setThat(..);
+				obj.setThis(...);
+				return obj;
+			}
+		}
+
+
+
+
+
+		-------------------
+
+		JPA and ORM 
+
+			a) Map Java class to tables
+				i) @Entity
+				ii) @Table is optional
+				iii) @Column is optional ==> to map java field to columns
+				iv) @Id ==> for Primary key
+				v) optionally @GeneratedValue to spcify how PK is generated
+			b) DataSource
+				is a pool of database connections
+
+			c) EntityManager is used to manage persistence context [ An environment
+			where entities are managed and sync with database]
+
+			d) To create EntityManager we need EntityManagerFactory:
+				this picks ORM, and DB connection from Pool
+
+
+		Spring:
+			1) Manages lifecycle of objects
+				a) creates objects if the class has: @Component, @REpository, @Service..
+				b) we can create objects on our own and pass it to spring
+					@Bean
+			2) Manages dependencies	
+					@Autowired
+					@Inject
+
+		=========================================
+		
+		JQ-QL ==> Java Persistence Query Language similar to SQL
+
+	@Entity 												emps
+	@Table("emps")											first_name
+	class Employee {
+		@Column(name="first_name")
+		String firstName;
+	}
+
+
+  JPQL 													SQL
+  from Employee 										select * from emps
+
+  select firstName from Employee  						select first_name from emps
+
+
+  	----------------------
+
+  	1) interface CustomerDao
+  			void addCustomer(Customer c);
+  			Customer getCustomer(String email);
+  			List<Customer> getCustomers();
+  	2) class CustomerDaoJpaImpl
+  	3) In OrderService class
+  		@Autowired
+  		CustomerDao customerDao;
+
+  		methods to invoke customer dao
+
+  	4) CustomerInsertClient
+  		CustomerGetByIDClient
+  		CustomerFetchClient
