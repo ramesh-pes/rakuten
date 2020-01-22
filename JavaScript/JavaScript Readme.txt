@@ -643,6 +643,80 @@ state = {
             {id: 4, name: "One plus 7"}
         ]
     };
+ ==================
+
+ 1) Adding google fonts:https://fonts.google.com/
+	Add: oswald and "Permanent Marker"
+	add the link into index.html
+
+    <link href="https://fonts.googleapis.com/css?family=Oswald|Permanent+Marker&display=swap" rel="stylesheet">
+
+2) Adding Bootstrap: npm i --save bootstrap
+	in App.js
+	import 'bootstrap/dist/css/bootstrap.min.css';
+3) Add FontAwesome:
+	  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+	  ==========================
+
+	  index.js
+	  const data =[  ..];
+
+
+ReactDOM.render(<Menu title="Delicious Recipes" recipes={data}/>, document.getElementById('root'));
+
+Menu.js
+
+render() {
+		const {title,recipes} = this.props;
+		return (
+			<React.Fragment>
+				<h1>{title} </h1>
+				{
+					recipes.map( r => {
+						<Recipe recipe={r}/>
+					})
+				}
+			</Rect.Fragment>
+		);
+}
+
+REcipe.js
+
+	render() {
+		const {recipe} = this.props;
+		return (
+			<Ingredient ingredients={recipe.ingredients}/>
+			<Instructions steps = {recipe.steps}/>
+		);
+	}
+	================
+
+	Bootstrap ==> RWD [ Responsive Web Design ]
+	Fondation / Zurb are other RWD CSS libraries
+============================================================
+
+	State Vs Props Vs Context
+
+	State: Component data
+		Example:
+			Button:
+				color, caption , disabled
+	Props:
+			a Mechanism used to pass data/function from parent component to child
+		Issues with props: data/functions passes thro  many intermediary components which has nothing to do with it.
+
+	Context:
+		Context --> single source of truth
+		Provider exposes the data and functions
+		Consumer subscribes what Provider is exposing
+
+	======
+
+	a) boostrap, fontawsome, google fonts
+
+
+
 
 
 	   
