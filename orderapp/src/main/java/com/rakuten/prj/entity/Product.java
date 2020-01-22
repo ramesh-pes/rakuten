@@ -19,6 +19,8 @@ public class Product implements Comparable<Product> {
 	
 	private String category;
 	
+	private int qty;
+	
 	public Product() {
 	}
 
@@ -55,6 +57,15 @@ public class Product implements Comparable<Product> {
 	}
 	public void setCategory(String category) {
 		this.category = category;
+	}
+
+	
+	public int getQty() {
+		return qty;
+	}
+
+	public void setQty(int qty) {
+		this.qty = qty;
 	}
 
 	@Override

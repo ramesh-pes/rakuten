@@ -707,3 +707,595 @@ Day 4:
   	4) CustomerInsertClient
   		CustomerGetByIDClient
   		CustomerFetchClient
+====================================================================================
+			Day 5
+			-----
+			JPA with ORM:
+				a) @Entity, @Table, @Id and @Column, @GeneratedValue
+				b) EntityManager is used to manage PErsistenceContext and perform CRUD operations.
+				@PersistenceContext to inject EntityManager in DAO class
+
+				c) We configured DataSource [ Pool of database connections],
+					EntityManagerFactory in AppConfig.java
+
+			Spring:
+				creates objects using default constructor of classes which has one of the
+				following annotations: @Component, @Repository, @Service, @Controller, @RestController
+
+				@Bean is used on methods which create object and return object, the returned object is managed by spring container
+
+				@Autowired / @Inject is for wiring [ Dependency Injection]
+
+				To create Spring Container:
+					a) AnnotationConfigApplicationContext
+					b) ClassPathXmlApplicationContext
+			--------------------------------------
+			
+			ORM: entity relationship [ Cardinality ]
+			a) one-to-many
+			b) many-to-one
+			c) many-to-many
+			d) one-to-one
+
+
+			Without Cascade:
+				If one order has 5 items
+					em.persist(order);
+					em.persist(item1);			
+					em.persist(item2);
+					em.persist(item3);
+					em.persist(item4);
+					em.persist(item5);
+		With Cascade:
+				em.persist(order);
+
+
+		=======
+			Without Cascade:
+				em.remove(order);
+				em.remove(item1);			
+					em.remove(item2);
+					em.remove(item3);
+					em.remove(item4);
+					em.remove(item5);
+
+			With Cascade:
+				em.remove(order);
+==================
+
+	Fetch LAZY:
+		em.find(Order.class, 120); // gets order whose id is 120
+
+	Fetch EAGER:
+		em.find(Order.class, 120); // gets order whose id is 120 and items also belonging to that order		
+		============
+
+		Good practice for entity classes:
+			a) generate hashCode() and equals()
+			b) generate toString()
+			c) implements Comparable
+			d) implements Serializable
+
+====================================================================
+
+	Ticket Tracking application
+		entity:
+		1) class Ticket
+		2) class Employee
+
+		Ticket can be raised by an employee
+			1) Laptop reboots
+		Ticket is resolved by employee
+			2) Replaced RAM /
+
+
+	Use cases:
+		1) Insert employees
+		2) Raise a Ticket
+		3) Resolve a Ticket
+			a) print all open tickets
+			b) Resolve one of the ticket which is open
+
+	==========================================================
+
+		Relationship
+
+		Ticket Class:
+
+			Date raisedDate; 
+			Date reolvsedDate; 
+
+			@ManyToOne
+			@JoinColumn(name="raised_by")
+			private Employee raisedBy;
+
+			@ManyToOne
+			@JoinColumn(name="resolved_by")
+			private Employee resolvedBy;
+
+		================
+		
+		Client Code for Raise Ticket:
+
+			Ticket t = new Ticket();
+			Employee e = new Employee();
+			e.setEmpId(1);
+			e.setRaisedBy(e);
+			e.setRaisedDate(new Date());
+			e.setTicketDesc("Laptop restarts");
+
+			ticketService.raiseTicket(t);
+
+		Service code for Raise Ticket
+
+			void raiseTicket(Ticket t) {
+				Employee e = employeeDao.getEmployeeById(t.getEmployee().getEmloyeeId());
+				t.setRaisedBy(e);
+				ticketDao.raiseTicket(t);
+			}
+
+		Dao code:
+			em.persist(t);
+
+	==========================================================================================
+
+	Hotel booking application:
+		1) Entities:
+			a) Hotel
+			b) User
+			c) Booking
+				will have association with Hotel
+				will have association with User
+				checkinDate [ not system date]
+				checkOutDate [ not system date]
+				Calender, SimpleDateFormat [ Prefer ]
+
+		2) use cases:
+			a) list hotels based on search criteria
+				tokyo
+				Marriot
+			b) Book a hotel
+			c) list bookings between 2 dates
+
+			
+
+	@ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@JoinTable(name="movie_actor",
+		joinColumns= {@JoinColumn(name= "movie_id")}, 
+		inverseJoinColumns = {@JoinColumn(name="actor_id")})
+	Set<Actor> actors = new LinkedHashSet<>();
+
+	============================================================
+
+	Day 6
+	-----
+
+	class Employee {
+		empId;
+
+		@ManyToOne
+		@JoinColumn("dept_id")
+		Department dept;
+	}
+
+
+	class Department {
+		depId;
+
+		@OneToMany(mappedBy="dept")
+		private List<Employee> employees = new ArrayList<>();
+	}
+
+
+		
+	@OneToOne
+	@JoinColumn("t1id")
+
+	==============================================================================
+
+	ManyToMany
+
+		Student and Course
+
+
+	ManyToMany became:
+		onetomany and manyto one
+
+		StudentCourse
+			@ManyToOne
+			@JoinColumn("sid")
+			Student s;
+			@ManyToOne
+			@JoinColumn("cid")
+			Course c;
+
+			Date startDate;
+			Date endDate;
+
+ 	==============
+
+ 	Different states of entity object
+ 		a) Transient state
+ 		b) Managed / Persistence state
+ 		c) Detached
+ 		d) Removed
+=================================
+
+JPQL:
+	
+	1) // "from Product where category = '" + category + "'";
+
+		String jpql = "from Product where category = :cat";
+
+		TypedQuery<Product> query = em.createQuery(jpql, Product.class);
+		query.setParameter("cat", "mobile");
+		query.getResultList();
+
+	2) 
+
+			String jpql = "from Hotel";
+			TypedQuery<Hotel> query = em.createQuery(jpql, Hotel.class);
+			query.setFirstResult(1);
+			query.setMaxResults(10); // pagination
+
+
+	3) String jpql = "select name, price from Product"; //scalar values
+		Query query = em.createQuery(jqpl);
+		List<Object[]> list = query.getResultList();
+
+	=====================================================================================
+
+	Spring-data-jpa: simplifies using JPA
+	using spring data jpa we just create interfaces, implementation classese are generated
+	by spring data jpa
+
+	interface MovieDao extends JPARepository<Movie>{
+
+	}
+
+
+	SpringData JPA generates class MovieDaoJpaImpl implemnts MovieDao, with all CRUD opertions
+
+	Spring Boot Framework: a framework on top of Spring Framework. Does a lot of plumbing code.
+	It is highly opiniated: --> It assumes Hibernate is used as ORM and configures it.
+	It assumes we use Tomcat as web container.
+	Spring Boot is an open source Java-based framework used to create a micro Service.  
+	It is designed to run on containers [ Docker, Heroku, ...]
+
+
+	https://start.spring.io/
+
+
+	
+	List<Product> findByCategoryAndPrice(String category, double price);
+
+	select * from products where category = .. and price = ...
+
+
+
+	List<Product> findByCategoryOrPrice(String category, double price);
+
+	select * from products where category = .. OR price = ...
+
+	java 8: Optional
+
+	=====================================
+
+	Web applications:
+		1) Traditional Web application
+		2) RESTful WebServices
+
+
+	Traditional Web application:
+	----------------------------
+
+		Servlet Engine/Web Container: manages life cycle of Servlet [Code written in Java and executed inside Servlet engine]
+
+		Java Traditional Web application components:
+		1) HTML
+		2) CSS
+		3) JS
+
+			HTML + CSS + JS
+			Presentation + Decoration + Dynamic
+
+		4) Servlet 
+			==>	Dynamic content
+			==> Singleton objects by default
+			==> Multi-threaded
+		5) JSP: Java Server Pages
+			static + dynamic content
+	==============================
+
+
+		@Controller
+		public class LoginController{
+
+			@RequestMapping("list.do")
+			method() {
+
+			}
+
+			@RequestMapping("login.do")
+			method() {
+
+			}
+			@RequestMapping("register.do")
+			method() {
+
+			}
+		}
+
+
+	a.jsp
+		HTML
+		and some tags
+
+	Jasper converts a.jsp ==?> servlet.java
+	Javac servlet ==> .class
+	==========================
+
+	Install the following:
+		a) POSTMAN [ Chrome Web extension / App]	
+			to test REST APIs
+		b) VisualStudio Code
+		c) NodeJS [ LTS ]
+======================================================================
+	
+	Building REST APIs
+
+	Rest is an acronym for REpresentational State Transfer.
+
+	Resource: Any named thing on a server is a resouce
+	Representation: Resource can be served to the client in various formats
+	[representation]. Commonly used representations being [ XML, JSON, CSV, HTML]
+
+	REST is architectural style.
+	"Client-server": Strongly recommends to decouple client and server applications. Various/ Heterogenous clients. REST data can be consumed by
+	Web, Mobile, Standalone,..
+
+	"Stateless": HTTP protocol is stateless. It does not track conversational state of client. In Traditional web application we use Session Tracking to solve this [Cookie, URL-Rewriting]
+
+	"Hypermedia": 
+
+
+	-------------------------------------------------
+
+	REST concept evolved in year 2000, coined by Ray Fielding
+
+	Each Resource should have a URL, use pluaral nouns to identify a resource
+	http://imdb.com/movies
+	http://imdb.com/actors
+	--------
+	Each action on the resource is done using HTTP methods:
+
+	GET 					-->   Fetch representation of resource
+	POST 					--> create a sub-resource
+	PUT 					--> update a resource
+	DELETE 					--> delete a resource 
+
+	Sample:
+	1) 
+	GET:
+	http://localhost:8080/products
+
+	get all products
+
+
+	2) 
+	GET:
+	http://localhost:8080/products/44
+	
+	get a product whose id is 44
+
+	Extra path parameter is for "ID" or sub-resource
+
+	3) 
+	GET:
+	http://localhost:8080/products?category=mobile
+	
+	http://localhost:8080/products?page=3&size=20
+
+	use query parameter to filter resource
+
+	Note: GET doesn't have payload
+
+	---
+
+	4) 
+	POST
+	http://localhost:8080/products
+
+	payload contains the new product info which has to be added to "products"
+
+
+	5) 
+	PUT
+	http://localhost:8080/products/2
+
+	payload contains the modified product which has to update the product 
+	whose id is "2"
+
+	6)
+	DELETE
+	http://localhost:8080/products/2
+
+	delete a product whose id is "2"
+
+	-------------
+
+	Payload: PUT and POST
+	----
+
+	IDEMPOTENT methods [ Safe ]: Doesn't have any effect on resource for multiple requests
+
+	"GET", "DELETE" is IDEMPOTENT
+
+	"PUT", "POST" is not IDEMPOTENT
+
+	----------------------
+
+	REST apis depend on the following HTTP headers to serve representation
+	MIME type: to identify the type of data
+
+	accept: application/json
+
+	accept: text/xml
+
+	accept: text/csv
+
+	What type of payload the client is sending:
+	content-type: application/json
+
+	--------------------------------
+
+	ContentNegotiation Handlers: convert JAVA <--> Representation
+
+
+
+	XML:
+		<product>
+			<id>33</id>
+			<name>Test</name>
+			<price>4545.55</price>
+		</product>
+
+		JAXB --> JAvaXML Binding
+
+		---
+	JSON: JavaScriptObjectNotation
+		{} ==> OBject
+		[] ==> array
+
+		{
+			"id": 1,
+			"name" : "Test",
+			"price": 442.33
+		}
+
+		Libraries: Jackson, Jettison, GSON, Moxy
+
+	==========
+
+	Status CODE:
+
+	200 ==> OK
+	201 ==> CREATED
+
+	404 ==> Resource Not Found
+	400 ==> BAD REquest
+
+	500 == >Server Internal Error
+
+	302 ==> REDIRECT
+
+	RestTemplate: To consume REST data in Java
+
+	http://localhost:8080/products
+	http://localhost:8080/products?category=mobile
+
+
+	Order:
+
+	{
+		"customer": {
+			"email" : "b@rakuten.com"
+		},
+		"items" : [
+			{
+				"product" : {
+					id: 1
+				},
+				"quantity" : 1,
+				"amount" : 98000.00
+			},
+			{
+				"product" : {
+					id: 5
+				},
+				"quantity" : 2,
+				"amount" : 60000.00
+			}
+		],
+		"total": 158000.00
+
+	}
+================================================================
+
+	POSTMAN / Advanced Rest Client: REST Client for Testing REST APIs
+
+	RestTemplate: 
+		a) To test RESTApi programatically [It is not Unit testing but can use in JUnit to test API]
+		b) To Conusme RESTApi ==> client code has to get data from
+			RESTful Web SErvices
+			Example: One Microservice consuming data of other microservice
+
+
+		RestController ---> Service ---> DAO ---> Database
+
+
+		We need to use Mock APIs to test code in isolation
+		
+			To Test RestController we need to create SErvice Mock objects
+			To Test Service we need to mock DAO
+
+			Java has few Mocking APIS: EasyMock, JMock and Mockito
+
+			Mockito has become the defacto API for mocking [ Integrated witin Spring boot]
+
+			----
+
+
+			class Service {
+
+				Product getProduct(int id) { 	
+					//....
+				}
+
+				void addProduct(Product p ){
+
+				}
+			}
+
+
+			@RestController 
+			class ProductController {
+				@Autowired Service s;
+
+				@ResponseBody Product getProduct(int id) {
+					return service .getProduct(id);
+				}
+			}
+
+
+			-- 
+
+			To Test ProductController:
+				Use Mockito mocking apis
+
+				@MockBean
+				Service s;
+
+				when(s.getProduct(13)).thenReturn(new Product(13,"A",450.00));
+
+
+
+
+				com.rakuten.prj.api
+
+				ProductRestControllerTest
+
+============================
+
+	FundRaising Project:
+		1) Spring Boot
+		2) Unit Testing with Mockito
+		3) Checkstyle
+		4) POSTMAN and RESTTemplate
+
+		
+
+
+
+
+
