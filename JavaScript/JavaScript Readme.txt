@@ -715,6 +715,48 @@ REcipe.js
 
 	a) boostrap, fontawsome, google fonts
 
+==============================================================
+	State, props.
+	Issue with passing data with "props", it might have to go thro many intermediary components which has nothing to do with it.
+
+	Context: --> Single source of data. [ State and Behaviour ]
+
+	Provider: exposes context
+	Consumer: Subscribes for context
+
+	Router:
+		useful while building SPA --> Single Page Application
+		In SPA: payload between client-server is JSON/XML
+
+		SPA has one html: index.html
+		In traditional application each URI gives different pages
+
+		http://rakuten.com/index.html
+		http://rakuten.com/login.html
+		http://rakuten.com/register.html
+		http://rakuten.com/products
+		http://rakuten.com/orders
+
+
+	Router provides URI to different views [ Still a single page]
+	
+	npm i --save react-router-dom	
+
+  axios.get("http://localhost:8080/products")
+        .then((response) => {
+            var prds = [...response.data];
+            this.setState({
+                products : prds,
+                detailProduct : prds[0]
+            })
+        })
+
+
+         axios.post("http://localhost:8080/order", this.state.cart).then((msg) =>
+        {
+            console.log(msg)
+        })
+
 
 
 
